@@ -6,6 +6,7 @@ let maxSearch = 5;
 let priceMapForCalcs = "";
 
 const fletchAmmoDiv = document.getElementById("fletchAmmoCalc");
+const cookingFoodDiv = document.getElementById("cookingCalc");
 
 let natureRune = "";
 let apiUrl = "https://api.weirdgloop.org/exchange/history/osrs/latest?id=";
@@ -187,15 +188,25 @@ const spawnNewInfoBox = (data, geData) => {//takes data from api fetch and assig
   itemContainer.appendChild(holdingDiv);
 }
 
-const createItemRow = (name, craft1, craft2) => {
+const createItemRow = (name, craft1, craft2, craft3, nameVar) => {
   const itemRow = document.createElement("tr");
 
   const itemCell1 = document.createElement("td");
-  itemCell1.innerHTML = name;
+  if(nameVar) {
+    itemCell1.innerHTML = name + nameVar;
+  } else {
+    itemCell1.innerHTML = name;
+  }
   itemRow.appendChild(itemCell1);
 
   const itemCell2 = document.createElement("td");
-  const craftCost = priceMapForCalcs[craft1] + priceMapForCalcs[craft2];
+  if(craft2 && craft3) {
+    var craftCost = priceMapForCalcs[craft1] + priceMapForCalcs[craft2] + priceMapForCalcs[craft3];
+  } else if(craft2) {
+    var craftCost = priceMapForCalcs[craft1] + priceMapForCalcs[craft2];
+  } else {
+    var craftCost =priceMapForCalcs[craft1];
+  }
   itemCell2.innerHTML = craftCost;
   itemRow.appendChild(itemCell2);
 
@@ -396,6 +407,212 @@ const fletchAmmoCalc = () => {
   }
 }
 
+const cookingProfitCalc = () => {
+  const holdingDiv = document.createElement("div");
+  itemContainer.appendChild(holdingDiv);
+
+  const cookCalcTable = document.createElement("table");
+  holdingDiv.appendChild(cookCalcTable);
+
+  const tableHead = document.createElement("thead");
+  cookCalcTable.appendChild(tableHead);
+  const headRow = document.createElement("tr");
+  tableHead.appendChild(headRow);
+  const headCell1 = document.createElement("th");
+  headCell1.innerHTML = "Item";
+  headRow.appendChild(headCell1);
+  const headCell2 = document.createElement("th");
+  headCell2.innerHTML = "Cost";
+  headRow.appendChild(headCell2);
+  const headCell3 = document.createElement("th");
+  headCell3.innerHTML = "Sell Price";
+  headRow.appendChild(headCell3);
+  const headCell4 = document.createElement("th");
+  headCell4.innerHTML = "Tax";
+  headRow.appendChild(headCell4);
+  const headCell5 = document.createElement("th");
+  headCell5.innerHTML = "Profit";
+  headRow.appendChild(headCell5);
+
+  const tableBody = document.createElement("tbody");
+  cookCalcTable.appendChild(tableBody);
+
+  let cookedMeatBeef = createItemRow("Cooked meat", 'Raw beef', null, null, " (raw beef)");
+  tableBody.appendChild(cookedMeatBeef);
+  let cookedMeatBear = createItemRow("Cooked meat", 'Raw bear meat', null, null, " (raw bear meat)");
+  tableBody.appendChild(cookedMeatBear);
+  let cookedMeatBoar = createItemRow("Cooked meat", 'Raw boar meat', null, null, " (raw boar meat)");
+  tableBody.appendChild(cookedMeatBoar);
+  let cookedMeatRat = createItemRow("Cooked meat", 'Raw rat meat', null, null, " (raw rat meat)");
+  tableBody.appendChild(cookedMeatRat);
+  let cookedMeatYak = createItemRow("Cooked meat", 'Raw yak meat', null, null, " (raw yak meat)");
+  tableBody.appendChild(cookedMeatYak);
+
+  let sinewBeef = createItemRow("Sinew", 'Raw beef', null, null, " (raw beef)");
+  tableBody.appendChild(sinewBeef);
+  let sinewBear = createItemRow("Sinew", 'Raw bear meat', null, null, " (raw bear meat)");
+  tableBody.appendChild(sinewBear);
+  let sinewBoar = createItemRow("Sinew", 'Raw boar meat', null, null, " (raw boar meat)");
+  tableBody.appendChild(sinewBoar);
+  let sinewMonkey = createItemRow("Sinew", 'Damaged monkey tail', null, null, " (damaged monkey tail)");
+  tableBody.appendChild(sinewMonkey);
+
+  let shrimps = createItemRow("Shrimps", "Raw shrimps");
+  tableBody.appendChild(shrimps);
+  let cookedChicken = createItemRow("Cooked chicken", "Raw chicken");
+  tableBody.appendChild(cookedChicken);
+  let cookedRabbit = createItemRow("Cooked rabbit", "Raw rabbit");
+  tableBody.appendChild(cookedRabbit);
+  let roastRabbit = createItemRow("Roast rabbit", "Raw rabbit");
+  tableBody.appendChild(roastRabbit);
+  let roastBirdMeat = createItemRow("Roast bird meat", "Raw bird meat");
+  tableBody.appendChild(roastBirdMeat);
+  let anchovies = createItemRow("Anchovies", "Raw anchovies");
+  tableBody.appendChild(anchovies);
+  let sardine = createItemRow("Sardine", "Raw sardine");
+  tableBody.appendChild(sardine);
+  let ugthankiMeat = createItemRow("Ugthanki meat", "Raw ugthanki meat");
+  tableBody.appendChild(ugthankiMeat);
+  let herring = createItemRow("Herring", "Raw herring");
+  tableBody.appendChild(herring);
+  let mackerel = createItemRow("Mackerel", "Raw mackerel");
+  tableBody.appendChild(mackerel);
+  let trout = createItemRow("Trout", "Raw trout");
+  tableBody.appendChild(trout);
+  let thinSnailMeat = createItemRow("Thin snail meat", "Thin snail");
+  tableBody.appendChild(thinSnailMeat);
+  let leanSnailMeat = createItemRow("Lean snail meat", "Lean snail");
+  tableBody.appendChild(leanSnailMeat);
+  let fatSnailMeat = createItemRow("Fat snail meat", "Fat snail");
+  tableBody.appendChild(fatSnailMeat);
+  let cod = createItemRow("Cod", "Raw cod");
+  tableBody.appendChild(cod);
+  let pike = createItemRow("Pike", "Raw pike");
+  tableBody.appendChild(pike);
+  let roastBeastMeat = createItemRow("Roast beast meat", "Raw beast meat");
+  tableBody.appendChild(roastBeastMeat);
+  let salmon = createItemRow("Salmon", "Raw salmon");
+  tableBody.appendChild(salmon);
+  let cookedSlimyEel = createItemRow("Cooked slimy eel", "Raw slimy eel");
+  tableBody.appendChild(cookedSlimyEel);
+  let tuna = createItemRow("Tuna", "Raw tuna");
+  tableBody.appendChild(tuna);
+  let cookedKarambwan = createItemRow("Cooked karambwan", "Raw karambwan");
+  tableBody.appendChild(cookedKarambwan);
+  let cookedChompy = createItemRow("Cooked chompy", "Raw chompy");
+  tableBody.appendChild(cookedChompy);
+  let rainbowFish = createItemRow("Rainbow fish", "Raw rainbow fish");
+  tableBody.appendChild(rainbowFish);
+  let caveEel = createItemRow("Cave eel", "Raw cave eel");
+  tableBody.appendChild(caveEel);
+  let lobster = createItemRow("Lobster", "Raw lobster");
+  tableBody.appendChild(lobster);
+  let cookedJubbly = createItemRow("Cooked jubbly", "Raw jubbly");
+  tableBody.appendChild(cookedJubbly);
+  let bass = createItemRow("Bass", "Raw bass");
+  tableBody.appendChild(bass);
+  let swordfish = createItemRow("Swordfish", "Raw swordfish");
+  tableBody.appendChild(swordfish);
+  let monkfish = createItemRow("Monkfish", "Raw monkfish");
+  tableBody.appendChild(monkfish);
+  let shark = createItemRow("Shark", "Raw shark");
+  tableBody.appendChild(shark);
+  let seaTurtle = createItemRow("Sea turtle", "Raw sea turtle");
+  tableBody.appendChild(seaTurtle);
+  let anglerfish = createItemRow("Anglerfish", "Raw anglerfish");
+  tableBody.appendChild(anglerfish);
+  let darkCrab = createItemRow("Dark crab", "Raw dark crab");
+  tableBody.appendChild(darkCrab);
+  let mantaRay = createItemRow("Manta ray", "Raw manta ray");
+  tableBody.appendChild(mantaRay);
+
+  let bread = createItemRow("Bread", "Bread dough");
+  tableBody.appendChild(bread);
+
+  let plainPizza = createItemRow("Plain pizza", "Pizza base", "Tomato", "Cheese");
+  tableBody.appendChild(plainPizza);
+  let meatPizza = createItemRow("Meat pizza", "Plain pizza", "Cooked meat", null, " (cooked meat)");
+  tableBody.appendChild(meatPizza);
+  let meatPizzaChicken = createItemRow("Meat pizza", "Plain pizza", "Cooked chicken", null, " (cooked chicken)");
+  tableBody.appendChild(meatPizzaChicken);
+  let anchovyPizza = createItemRow("Anchovy pizza", "Plain pizza", "Anchovies");
+  tableBody.appendChild(anchovyPizza);
+  let pineapplePizzaRing = createItemRow("Pineapple pizza", "Plain pizza", "Pineapple ring", null, " (pineapple ring)");
+  tableBody.appendChild(pineapplePizzaRing);
+  let pineapplePizzaChunks = createItemRow("Pineapple pizza", "Plain pizza", "Pineapple chunks", null, " (pineapple chunks)");
+  tableBody.appendChild(pineapplePizzaChunks);
+  let chocolateCakeBar = createItemRow("Chocolate cake", "Cake", "Chocolate bar", null, " (chocolate bar)");
+  tableBody.appendChild(chocolateCakeBar);
+  let chocolateCakeDust = createItemRow("Chocolate cake", "Cake", "Chocolate dust", null, " (chocolate dust)");
+  tableBody.appendChild(chocolateCakeDust);
+
+  let jugOfWine = createItemRow("Jug of wine", "Grapes", "Jug of water");
+  tableBody.appendChild(jugOfWine);
+  let wineOfZamorak = createItemRow("Wine of zamorak", "Zamorak's grapes", "Jug of water");
+  tableBody.appendChild(wineOfZamorak);
+
+  let bakedPotato = createItemRow("Baked potato", "Potato");
+  tableBody.appendChild(bakedPotato);
+  let potatoWithButter = createItemRow("Potato with butter", "Baked potato", "Pat of butter");
+  tableBody.appendChild(potatoWithButter);
+  let chilliPotato = createItemRow("Chilli potato", "Potato with butter", "Chilli con carne");
+  tableBody.appendChild(chilliPotato);
+  let eggPotato = createItemRow("Egg potato", "Potato with butter", "Egg and tomato");
+  tableBody.appendChild(eggPotato);
+  let mushroomPotato = createItemRow("Mushroom potato", "Potato with butter", "Mushroom & onion");
+  tableBody.appendChild(mushroomPotato);
+  let potatoWithCheese = createItemRow("Potato with cheese", "Potato with butter", "Cheese");
+  tableBody.appendChild(potatoWithCheese);
+  let tunaPotato = createItemRow("Tuna potato", "Potato with butter", "Tuna and corn");
+  tableBody.appendChild(tunaPotato);
+
+  let spicySauce = createItemRow("Spicy sauce", "Chopped garlic", "Gnome spice");
+  tableBody.appendChild(spicySauce);
+  let scrambledEgg = createItemRow("Scrambled egg", "Uncooked egg");
+  tableBody.appendChild(scrambledEgg);
+  let eggAndTomato = createItemRow("Egg and tomato", "Scrambled egg", "Tomato");
+  tableBody.appendChild(eggAndTomato);
+  let cookedSweetcorn = createItemRow("Cooked sweetcorn", "Sweetcorn");
+  tableBody.appendChild(cookedSweetcorn);
+  let friedOnions = createItemRow("Fried onions", "Chopped onion");
+  tableBody.appendChild(friedOnions);
+  let friedMushrooms = createItemRow("Fried mushrooms", "Sliced mushrooms");
+  tableBody.appendChild(friedMushrooms);
+  let mushroomAndOnion = createItemRow("Mushroom & onion", "Fried mushrooms", "Fried onions");
+  tableBody.appendChild(mushroomAndOnion);
+
+  let potOfCream = createItemRow("Pot of cream", "Bucket of milk");
+  tableBody.appendChild(potOfCream);
+  let patOfButterMilk = createItemRow("Pat of butter", "Bucket of milk");
+  tableBody.appendChild(patOfButterMilk);
+  let patOfButterCream = createItemRow("Pat of butter", "Pot of cream");
+  tableBody.appendChild(patOfButterCream);
+  let cheeseMilk = createItemRow("Cheese", "Bucket of milk");
+  tableBody.appendChild(cheeseMilk);
+  let cheeseCream = createItemRow("Cheese", "Pot of cream");
+  tableBody.appendChild(cheeseCream);
+  let cheeseButter = createItemRow("Cheese", "Pat of butter");
+  tableBody.appendChild(cheeseButter);
+  let ugthankiKebab = createItemRow("Ugthanki kebab", "Kebab mix", "Pitta bread");
+  tableBody.appendChild(ugthankiKebab);
+  /*These are the foodstuffs
+
+  */
+
+  const rows = Array.from(cookCalcTable.rows);
+  
+  rows.sort((row1, row2) => {// sorts by profit highest to lowest
+    const value1 = parseInt(row1.cells[row1.cells.length - 1].textContent);
+    const value2 = parseInt(row2.cells[row2.cells.length - 1].textContent);
+    return value2 - value1;
+  });
+  
+  cookCalcTable.innerHTML = '';
+  for (const row of rows) {
+    cookCalcTable.appendChild(row);
+  }
+}
+
 const clearItemViewer = () => {
   while(itemContainer.firstChild) {
     itemContainer.removeChild(itemContainer.lastChild);
@@ -420,4 +637,8 @@ searchBox.onkeyup = function() { // start search on key up
 fletchAmmoDiv.onclick = function() {
   clearItemViewer();
   fletchAmmoCalc();
+}
+cookingFoodDiv.onclick = function() {
+  clearItemViewer();
+  cookingProfitCalc();
 }
