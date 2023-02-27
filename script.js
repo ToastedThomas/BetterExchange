@@ -1,12 +1,18 @@
 const searchBox = document.getElementById("searchBox");
 const resultContainer = document.getElementById("resultsContainer");
 const itemContainer = document.getElementById("itemContainer");
+
 let maxSearch = 5;
+
+let degrimeBool = false;
+let herbAmount = 1;
+let natureAmount = 0;
 
 let priceMapForCalcs = "";
 
 const fletchAmmoDiv = document.getElementById("fletchAmmoCalc");
 const cookingFoodDiv = document.getElementById("cookingCalc");
+const herbCleaningDiv = document.getElementById("herbCleaningCalc");
 
 let natureRune = "";
 let apiUrl = "https://api.weirdgloop.org/exchange/history/osrs/latest?id=";
@@ -237,10 +243,101 @@ const createItemRow = (name, craft1, craft2, craft3, nameVar) => {
 
   return itemRow
 }
+const createItemRow2 = (numMade, name, num1, craft1, num2, craft2, nameVar) => {
+  const itemRow = document.createElement("tr");
+
+  const itemCell1 = document.createElement("td");
+  if(nameVar) {
+    itemCell1.innerHTML = name + nameVar;
+  } else {
+    itemCell1.innerHTML = name;
+  }
+  itemRow.appendChild(itemCell1);
+
+  const itemCell2 = document.createElement("td");
+  if(craft2) {
+    var craftCost = (priceMapForCalcs[craft1] * num1) + (priceMapForCalcs[craft2] * num2);
+  } else {
+    var craftCost =priceMapForCalcs[craft1] * num1;
+  }
+  itemCell2.innerHTML = craftCost;
+  itemRow.appendChild(itemCell2);
+
+  const itemCell3 = document.createElement("td");
+  const sellPrice = priceMapForCalcs[name] * numMade;
+  itemCell3.innerHTML = sellPrice;
+  itemRow.appendChild(itemCell3);
+
+  const itemCell4 = document.createElement("td");
+  const tax = Math.ceil(sellPrice * -.01);
+  itemCell4.innerHTML = tax;
+  if (tax < 0) {
+    itemCell4.classList.add("redText");
+  } else {
+    itemCell4.classList.add("greenText");
+  }
+  itemRow.appendChild(itemCell4);
+
+  const itemCell5 = document.createElement("td");
+  const itemProfit = sellPrice + tax - craftCost;
+  itemCell5.innerHTML = itemProfit;
+  if (itemProfit < 0) {
+    itemCell5.classList.add("redText");
+  } else {
+    itemCell5.classList.add("greenText");
+  }
+  itemRow.appendChild(itemCell5);
+
+  return itemRow
+}
+const createHerbRow = (name, craft1, craft2) => {
+  const itemRow = document.createElement("tr");
+
+  const itemCell1 = document.createElement("td");
+  itemCell1.innerHTML = name;
+  itemRow.appendChild(itemCell1);
+
+  const itemCell2 = document.createElement("td");
+  var craftCost = priceMapForCalcs[craft1];
+  itemCell2.innerHTML = craftCost;
+  itemRow.appendChild(itemCell2);
+
+  const itemCell3 = document.createElement("td");
+  const sellPrice = priceMapForCalcs[name];
+  itemCell3.innerHTML = sellPrice;
+  itemRow.appendChild(itemCell3);
+
+  const itemCell4 = document.createElement("td");
+  const tax = Math.ceil(sellPrice * -.01);
+  itemCell4.innerHTML = tax;
+  if (tax < 0) {
+    itemCell4.classList.add("redText");
+  } else {
+    itemCell4.classList.add("greenText");
+  }
+  itemRow.appendChild(itemCell4);
+
+  const itemCell5 = document.createElement("td");
+  const itemProfit = ((sellPrice + tax - craftCost) * herbAmount) - (priceMapForCalcs[craft2] * natureAmount);
+  itemCell5.innerHTML = itemProfit;
+  if (itemProfit < 0) {
+    itemCell5.classList.add("redText");
+  } else {
+    itemCell5.classList.add("greenText");
+  }
+  itemRow.appendChild(itemCell5);
+
+  return itemRow
+}
 
 const fletchAmmoCalc = () => {
   const holdingDiv = document.createElement("div");
   itemContainer.appendChild(holdingDiv);
+
+  const title = document.createElement("h2");
+  title.innerHTML = 'Fletching ammo';
+  title.classList.add("calcTitle");
+  holdingDiv.appendChild(title);
 
   const fletchCalcTable = document.createElement("table");
   holdingDiv.appendChild(fletchCalcTable);
@@ -267,6 +364,23 @@ const fletchAmmoCalc = () => {
 
   const tableBody = document.createElement("tbody");
   fletchCalcTable.appendChild(tableBody);
+
+  let headlessArrow = createItemRow("Headless arrow", 'Arrow shaft', 'Feather');
+  tableBody.appendChild(headlessArrow);
+  let arrowShaftLogs = createItemRow2(15, "Arrow shaft", 1, 'Logs', null, null, " (logs)");
+  tableBody.appendChild(arrowShaftLogs);
+  let arrowShaftOak = createItemRow2(30, "Arrow shaft", 1, 'Oak logs', null, null, " (oak logs)");
+  tableBody.appendChild(arrowShaftOak);
+  let arrowShaftWillow = createItemRow2(45, "Arrow shaft", 1, 'Willow logs', null, null, " (willow logs)");
+  tableBody.appendChild(arrowShaftWillow);
+  let arrowShaftMaple = createItemRow2(60, "Arrow shaft", 1, 'Maple logs', null, null, " (maple logs)");
+  tableBody.appendChild(arrowShaftMaple);
+  let arrowShaftYew = createItemRow2(75, "Arrow shaft", 1, 'Yew logs', null, null, " (yew logs)");
+  tableBody.appendChild(arrowShaftYew);
+  let arrowShaftMagic = createItemRow2(90, "Arrow shaft", 1, 'Magic logs', null, null, " (magic logs)");
+  tableBody.appendChild(arrowShaftMagic);
+  let arrowShaftRed = createItemRow2(105, "Arrow shaft", 1, 'Redwood logs', null, null, " (redwood logs)");
+  tableBody.appendChild(arrowShaftRed);
 
   let bronzeArrow = createItemRow("Bronze arrow", 'Headless arrow', 'Bronze arrowtips');
   tableBody.appendChild(bronzeArrow);
@@ -410,6 +524,11 @@ const fletchAmmoCalc = () => {
 const cookingProfitCalc = () => {
   const holdingDiv = document.createElement("div");
   itemContainer.appendChild(holdingDiv);
+
+  const title = document.createElement("h2");
+  title.innerHTML = 'Cooking food';
+  title.classList.add("calcTitle");
+  holdingDiv.appendChild(title);
 
   const cookCalcTable = document.createElement("table");
   holdingDiv.appendChild(cookCalcTable);
@@ -613,6 +732,126 @@ const cookingProfitCalc = () => {
   }
 }
 
+const herbCleaningCalc = () => {
+  const holdingDiv = document.createElement("div");
+  itemContainer.appendChild(holdingDiv);
+
+  const title = document.createElement("h2");
+  title.innerHTML = 'Herb cleaning';
+  title.classList.add("calcTitle");
+  holdingDiv.appendChild(title);
+
+  const manualOption = document.createElement("input");
+  manualOption.type = 'radio';
+  manualOption.name = 'cleanType';
+  manualOption.checked = !degrimeBool;
+  manualOption.onclick = function() {
+    herbAmount = 1;
+    natureAmount = 0;
+    degrimeBool = false;
+    clearItemViewer();
+    herbCleaningCalc();
+  }
+  holdingDiv.appendChild(manualOption);
+
+  const manualText = document.createElement("p");
+  manualText.innerHTML = 'Manual cleaning';
+  manualText.classList.add('optionText');
+  holdingDiv.appendChild(manualText);
+
+  const degrimeOption = document.createElement("input");
+  degrimeOption.type = 'radio';
+  degrimeOption.name = 'cleanType';
+  degrimeOption.checked = degrimeBool;
+  degrimeOption.onclick = function() {
+    herbAmount = 27;
+    natureAmount = 2;
+    degrimeBool = true;
+    clearItemViewer();
+    herbCleaningCalc();
+  }
+  holdingDiv.appendChild(degrimeOption);
+
+  const degrimeText = document.createElement("p");
+  degrimeText.innerHTML = 'Degrime spell*';
+  degrimeText.classList.add('optionText');
+  holdingDiv.appendChild(degrimeText);
+
+  const degrimeTextNote = document.createElement("p");
+  degrimeTextNote.innerHTML = "*Using degrime spell assumes you clean 27 herbs at a time. Nature runes are taken into account when calculating profits."
+  holdingDiv.appendChild(degrimeTextNote);
+  
+
+  const herbCleanTable = document.createElement("table");
+  holdingDiv.appendChild(herbCleanTable);
+
+  const tableHead = document.createElement("thead");
+  herbCleanTable.appendChild(tableHead);
+  const headRow = document.createElement("tr");
+  tableHead.appendChild(headRow);
+  const headCell1 = document.createElement("th");
+  headCell1.innerHTML = "Item";
+  headRow.appendChild(headCell1);
+  const headCell2 = document.createElement("th");
+  headCell2.innerHTML = "Cost";
+  headRow.appendChild(headCell2);
+  const headCell3 = document.createElement("th");
+  headCell3.innerHTML = "Sell Price";
+  headRow.appendChild(headCell3);
+  const headCell4 = document.createElement("th");
+  headCell4.innerHTML = "Tax";
+  headRow.appendChild(headCell4);
+  const headCell5 = document.createElement("th");
+  headCell5.innerHTML = "Profit";
+  headRow.appendChild(headCell5);
+
+  const tableBody = document.createElement("tbody");
+  herbCleanTable.appendChild(tableBody);
+
+  //
+  let guamLeaf = createHerbRow("Guam leaf", 'Grimy guam leaf', 'Nature rune');
+  tableBody.appendChild(guamLeaf);
+  let marrentill = createHerbRow("Marrentill", 'Grimy marrentill', 'Nature rune');
+  tableBody.appendChild(marrentill);
+  let tarromin = createHerbRow("Tarromin", 'Grimy tarromin', 'Nature rune');
+  tableBody.appendChild(tarromin);
+  let harralander = createHerbRow("Harralander", 'Grimy harralander', 'Nature rune');
+  tableBody.appendChild(harralander);
+  let ranarrWeed = createHerbRow("Ranarr weed", 'Grimy ranarr weed', 'Nature rune');
+  tableBody.appendChild(ranarrWeed);
+  let toadflax = createHerbRow("Toadflax", 'Grimy toadflax', 'Nature rune');
+  tableBody.appendChild(toadflax);
+  let iritLeaf = createHerbRow("Irit leaf", 'Grimy irit leaf', 'Nature rune');
+  tableBody.appendChild(iritLeaf);
+  let avantoe = createHerbRow("Avantoe", 'Grimy avantoe', 'Nature rune');
+  tableBody.appendChild(avantoe);
+  let kwuarm = createHerbRow("Kwuarm", 'Grimy kwuarm', 'Nature rune');
+  tableBody.appendChild(kwuarm);
+  let snapdragon = createHerbRow("Snapdragon", 'Grimy snapdragon', 'Nature rune');
+  tableBody.appendChild(snapdragon);
+  let cadantine = createHerbRow("Cadantine", 'Grimy cadantine', 'Nature rune');
+  tableBody.appendChild(cadantine);
+  let lantadyme = createHerbRow("Lantadyme", 'Grimy lantadyme', 'Nature rune');
+  tableBody.appendChild(lantadyme);
+  let dwarfWeed = createHerbRow("Dwarf weed", 'Grimy dwarf weed', 'Nature rune');
+  tableBody.appendChild(dwarfWeed);
+  let torstol = createHerbRow("Torstol", 'Grimy torstol', 'Nature rune');
+  tableBody.appendChild(torstol);
+
+  const rows = Array.from(herbCleanTable.rows);
+  
+  rows.sort((row1, row2) => {// sorts by profit highest to lowest
+    const value1 = parseInt(row1.cells[row1.cells.length - 1].textContent);
+    const value2 = parseInt(row2.cells[row2.cells.length - 1].textContent);
+    return value2 - value1;
+  });
+  
+  herbCleanTable.innerHTML = '';
+  for (const row of rows) {
+    herbCleanTable.appendChild(row);
+  }
+}
+
 const clearItemViewer = () => {
   while(itemContainer.firstChild) {
     itemContainer.removeChild(itemContainer.lastChild);
@@ -641,4 +880,8 @@ fletchAmmoDiv.onclick = function() {
 cookingFoodDiv.onclick = function() {
   clearItemViewer();
   cookingProfitCalc();
+}
+herbCleaningDiv.onclick = function() {
+  clearItemViewer();
+  herbCleaningCalc();
 }

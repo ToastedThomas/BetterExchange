@@ -128,6 +128,9 @@ table, th, td {
   border: 1px solid white;
   border-collapse: collapse;
 }
+table {
+  margin-top: 20px;
+}
 th, td {
   text-align: left;
   padding: 10px 15px;
@@ -144,4 +147,13 @@ tr > td:nth-child(2), tr > td:nth-child(3) {
 }
 .redText {
   color: red;
+}
+
+.calcTitle {
+  font-size: 2em;
+  margin: 15px 0;
+}
+.optionText {
+  display: inline;
+  margin: 5px 20px 10px 5px;
 }
