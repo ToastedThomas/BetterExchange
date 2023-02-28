@@ -8,17 +8,27 @@ let degrimeBool = false;
 let herbAmount = 1;
 let natureAmount = 0;
 
+let plankSpellBool = false;
+
 let priceMapForCalcs = "";
 
 const fletchAmmoDiv = document.getElementById("fletchAmmoCalc");
 const cookingFoodDiv = document.getElementById("cookingCalc");
 const herbCleaningDiv = document.getElementById("herbCleaningCalc");
+const plankMakingDiv = document.getElementById("plankMakingCalc");
 
 let natureRune = "";
-let apiUrl = "https://api.weirdgloop.org/exchange/history/osrs/latest?id=";
+let apiUrl = "https://api.weirdgloop.org/exchange/history/osrs/latest?id="; //this gets ge guide price and daily volume of specific item
 
 let apiMap = "";
-let mapUrl = "https://prices.runescape.wiki/api/v1/osrs/mapping";
+let mapUrl = "https://prices.runescape.wiki/api/v1/osrs/mapping"; //this provides basic item info i.e. 'examine text' 'low alch value' 'buy limit' 
+
+let offerMap = "";
+let offerUrl = "https://prices.runescape.wiki/api/v1/osrs/latest"; //this gets latest insta-buy/sell prices used for flipping offers
+
+let unixTime = 1666723891;
+let date = new Date(unixTime * 1000);
+console.log(date);
 
 const headers = {
   'User-Agent': 'item_data_and_profit_calculator - @ToastedBahlahkay#2267'
@@ -36,9 +46,14 @@ async function main() { //grabs necessary data for item searching and calcs
     //    .then(data => console.log(data));
 
     //OPTION 2
-    natureRune = await getJson(apiUrl, 561)
-
-    let test = await fetch("https://oldschool.runescape.wiki/w/Module:GEPrices/data?action=raw", {
+    natureRune = await getJson(apiUrl, 561);
+    offerMap = await fetch(offerUrl, {
+      cache: 'no-cache'
+    }).then(response => {
+      return response.json();
+    })
+    
+    let test = await fetch("https://oldschool.runescape.wiki/w/Module:GEPrices/data?action=raw", {//this api call gets only name and the ge guide price
       cache: 'default'// change to no-cache on live version
     });
 
@@ -189,7 +204,13 @@ const spawnNewInfoBox = (data, geData) => {//takes data from api fetch and assig
   const highAlch = document.createElement("p");
   highAlch.innerHTML = "High Alch: " + data.highalch; 
   itemDiv4.appendChild(highAlch);
+  const empty = document.createElement("p");
+  itemDiv4.appendChild(empty);
   subDiv.appendChild(itemDiv4);
+
+  const testText = document.createElement("p");
+  testText.innerHTML = offerMap.data[561].lowTime;
+  //subDiv.appendChild(testText) secret code in progress ;)
 
   itemContainer.appendChild(holdingDiv);
 }
@@ -298,7 +319,62 @@ const createHerbRow = (name, craft1, craft2) => {
   itemRow.appendChild(itemCell1);
 
   const itemCell2 = document.createElement("td");
-  var craftCost = priceMapForCalcs[craft1];
+  if(degrimeBool) {
+    var craftCost = (priceMapForCalcs[craft1] * 27) + (priceMapForCalcs['Nature rune'] * 2);
+  } else {
+    var craftCost = priceMapForCalcs[craft1];
+  }
+  itemCell2.innerHTML = craftCost;
+  itemRow.appendChild(itemCell2);
+
+  const itemCell3 = document.createElement("td");
+  if(degrimeBool) {
+    var sellPrice = priceMapForCalcs[name] * 27;
+  } else {
+    var sellPrice = priceMapForCalcs[name];
+  }
+  itemCell3.innerHTML = sellPrice;
+  itemRow.appendChild(itemCell3);
+
+  const itemCell4 = document.createElement("td");
+  if(degrimeBool) {
+    var tax = Math.ceil((sellPrice / 27) * -.01) * 27;
+  } else {
+    var tax = Math.ceil(sellPrice * -.01);
+  }
+  itemCell4.innerHTML = tax;
+  if (tax < 0) {
+    itemCell4.classList.add("redText");
+  } else {
+    itemCell4.classList.add("greenText");
+  }
+  itemRow.appendChild(itemCell4);
+
+  const itemCell5 = document.createElement("td");
+  const itemProfit = sellPrice + tax - craftCost;
+  itemCell5.innerHTML = itemProfit;
+  if (itemProfit < 0) {
+    itemCell5.classList.add("redText");
+  } else {
+    itemCell5.classList.add("greenText");
+  }
+  itemRow.appendChild(itemCell5);
+
+  return itemRow
+}
+const createPlankRow = (name, craft1, coins) => {
+  const itemRow = document.createElement("tr");
+
+  const itemCell1 = document.createElement("td");
+  itemCell1.innerHTML = name;
+  itemRow.appendChild(itemCell1);
+
+  const itemCell2 = document.createElement("td");
+  if(plankSpellBool) {
+    var craftCost = priceMapForCalcs[craft1] + (coins * .7) + priceMapForCalcs['Nature rune'] + (priceMapForCalcs['Astral rune'] * 2);
+  } else {
+    var craftCost = priceMapForCalcs[craft1] + coins;
+  }
   itemCell2.innerHTML = craftCost;
   itemRow.appendChild(itemCell2);
 
@@ -318,7 +394,7 @@ const createHerbRow = (name, craft1, craft2) => {
   itemRow.appendChild(itemCell4);
 
   const itemCell5 = document.createElement("td");
-  const itemProfit = ((sellPrice + tax - craftCost) * herbAmount) - (priceMapForCalcs[craft2] * natureAmount);
+  const itemProfit = sellPrice + tax - craftCost;
   itemCell5.innerHTML = itemProfit;
   if (itemProfit < 0) {
     itemCell5.classList.add("redText");
@@ -329,7 +405,6 @@ const createHerbRow = (name, craft1, craft2) => {
 
   return itemRow
 }
-
 const fletchAmmoCalc = () => {
   const holdingDiv = document.createElement("div");
   itemContainer.appendChild(holdingDiv);
@@ -852,6 +927,96 @@ const herbCleaningCalc = () => {
   }
 }
 
+const plankMakingCalc = () => {
+  const holdingDiv = document.createElement("div");
+  itemContainer.appendChild(holdingDiv);
+
+  const title = document.createElement("h2");
+  title.innerHTML = 'Plank making';
+  title.classList.add("calcTitle");
+  holdingDiv.appendChild(title);
+
+  const sawmillOption = document.createElement("input");
+  sawmillOption.type = 'radio';
+  sawmillOption.name = 'makeType';
+  sawmillOption.checked = !plankSpellBool;
+  sawmillOption.onclick = function() {
+    plankSpellBool = false;
+    clearItemViewer();
+    plankMakingCalc();
+  }
+  holdingDiv.appendChild(sawmillOption);
+
+  const sawmillText = document.createElement("p");
+  sawmillText.innerHTML = 'Sawmill';
+  sawmillText.classList.add('optionText');
+  holdingDiv.appendChild(sawmillText);
+
+  const spellOption = document.createElement("input");
+  spellOption.type = 'radio';
+  spellOption.name = 'makeType';
+  spellOption.checked = plankSpellBool;
+  spellOption.onclick = function() {
+    plankSpellBool = true;
+    clearItemViewer();
+    plankMakingCalc();
+  }
+  holdingDiv.appendChild(spellOption);
+
+  const spellText = document.createElement("p");
+  spellText.innerHTML = 'Plank make spell';
+  spellText.classList.add('optionText');
+  holdingDiv.appendChild(spellText);
+
+  const plankMakeTable = document.createElement("table");
+  holdingDiv.appendChild(plankMakeTable);
+
+  const tableHead = document.createElement("thead");
+  plankMakeTable.appendChild(tableHead);
+  const headRow = document.createElement("tr");
+  tableHead.appendChild(headRow);
+  const headCell1 = document.createElement("th");
+  headCell1.innerHTML = "Item";
+  headRow.appendChild(headCell1);
+  const headCell2 = document.createElement("th");
+  headCell2.innerHTML = "Cost";
+  headRow.appendChild(headCell2);
+  const headCell3 = document.createElement("th");
+  headCell3.innerHTML = "Sell Price";
+  headRow.appendChild(headCell3);
+  const headCell4 = document.createElement("th");
+  headCell4.innerHTML = "Tax";
+  headRow.appendChild(headCell4);
+  const headCell5 = document.createElement("th");
+  headCell5.innerHTML = "Profit";
+  headRow.appendChild(headCell5);
+
+  const tableBody = document.createElement("tbody");
+  plankMakeTable.appendChild(tableBody);
+
+  let plank = createPlankRow("Plank", 'Logs', 100);
+  tableBody.appendChild(plank);
+  let oakPlank = createPlankRow("Oak plank", 'Oak logs', 250);
+  tableBody.appendChild(oakPlank);
+  let teakPlank = createPlankRow("Teak plank", 'Teak logs', 500);
+  tableBody.appendChild(teakPlank);
+  let mahoganyPlank = createPlankRow("Mahogany plank", 'Mahogany logs', 1500);
+  tableBody.appendChild(mahoganyPlank);
+
+  const rows = Array.from(plankMakeTable.rows);
+  
+  rows.sort((row1, row2) => {// sorts by profit highest to lowest
+    const value1 = parseInt(row1.cells[row1.cells.length - 1].textContent);
+    const value2 = parseInt(row2.cells[row2.cells.length - 1].textContent);
+    return value2 - value1;
+  });
+  
+  plankMakeTable.innerHTML = '';
+  for (const row of rows) {
+    plankMakeTable.appendChild(row);
+  }
+}
+
 const clearItemViewer = () => {
   while(itemContainer.firstChild) {
     itemContainer.removeChild(itemContainer.lastChild);
@@ -884,4 +1049,8 @@ cookingFoodDiv.onclick = function() {
 herbCleaningDiv.onclick = function() {
   clearItemViewer();
   herbCleaningCalc();
+}
+plankMakingDiv.onclick = function() {
+  clearItemViewer();
+  plankMakingCalc();
 }

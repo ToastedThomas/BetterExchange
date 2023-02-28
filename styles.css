@@ -110,6 +110,8 @@ hr {
 
 #calcContainer {
   display: flex;
+  flex-wrap: wrap;
+  row-gap: 55px;
   justify-content: space-around;
 }
 .calcDiv {
@@ -119,6 +121,8 @@ hr {
   color: antiquewhite;
   padding: 40px;
   cursor: pointer;
+  flex-basis: 25%;
+  margin: 5px;
 }
 .calcDiv:hover {
   background-color: rgb(22, 22, 22);
