@@ -26,9 +26,8 @@ let mapUrl = "https://prices.runescape.wiki/api/v1/osrs/mapping"; //this provide
 let offerMap = "";
 let offerUrl = "https://prices.runescape.wiki/api/v1/osrs/latest"; //this gets latest insta-buy/sell prices used for flipping offers
 
-let unixTime = 1666723891;
-let date = new Date(unixTime * 1000);
-console.log(date);
+let volumeInfo = "";
+let volumeUrl = "https://prices.runescape.wiki/api/v1/osrs/1h"; //this link gets the buy/sell volumes for every item in the last 1hr
 
 const headers = {
   'User-Agent': 'item_data_and_profit_calculator - @ToastedBahlahkay#2267'
@@ -46,7 +45,6 @@ async function main() { //grabs necessary data for item searching and calcs
     //    .then(data => console.log(data));
 
     //OPTION 2
-    natureRune = await getJson(apiUrl, 561);
     offerMap = await fetch(offerUrl, {
       cache: 'no-cache'
     }).then(response => {
@@ -54,7 +52,7 @@ async function main() { //grabs necessary data for item searching and calcs
     })
     
     let test = await fetch("https://oldschool.runescape.wiki/w/Module:GEPrices/data?action=raw", {//this api call gets only name and the ge guide price
-      cache: 'default'// change to no-cache on live version
+      cache: 'no-cache'// change to no-cache on live version
     });
 
     let test1 = await test.text();
@@ -65,12 +63,28 @@ async function main() { //grabs necessary data for item searching and calcs
     priceMapForCalcs = JSON.parse(test5);
 
 
-    
+    volumeInfo = await getJson(volumeUrl, "");
+    console.log(volumeInfo)
 
     apiMap = await getJson(mapUrl, "");
 }
 
 main();
+
+const unixToReadable = (unix) => {
+  let unixDate = new Date(unix * 1000);
+  console.log(unixDate);
+  let nowDate = new Date();
+  console.log(nowDate);
+  let diff = Math.floor((nowDate.getTime() - unixDate.getTime()) / 1000);
+  console.log(diff);
+  if(diff >= 60) {
+    return "about " + Math.floor(diff / 60) + " minute(s) ago";
+  } else {
+    return "about " + diff + " seconds ago";
+  }
+  return diff;
+}
 
 const searchMap = (value) => {
   let numOfResults = 0;
@@ -131,8 +145,28 @@ const getItemInfo = (itemId) => {// grabs item data from api and map
   });
 }
 
+const createPriceGraph = () => {
+  const holdingDiv = document.createElement("div");
+
+  const titleDiv = document.createElement("div");
+  holdingDiv.appendChild(titleDiv);
+  const title = document.createElement("h2");
+  title.innerHTML = "Price graph";
+  titleDiv.appendChild(title);
+
+  holdingDiv.appendChild(document.createElement("hr"));
+
+
+
+  return holdingDiv;
+}
+
 const spawnNewInfoBox = (data, geData) => {//takes data from api fetch and assigns it to created elements
   const holdingDiv = document.createElement("div");
+
+  const subDiv = document.createElement("div");
+  subDiv.classList.add("subDiv");
+  holdingDiv.appendChild(subDiv);
 
   const itemImg = document.createElement("img");
   itemImg.style.maxWidth = 128 + "px";
@@ -143,7 +177,7 @@ const spawnNewInfoBox = (data, geData) => {//takes data from api fetch and assig
   imgSrc = imgSrc.replace("'", "%27");
   imgSrc = imgSrc.replace(".png", "");
   itemImg.src = "https://oldschool.runescape.wiki/images/" + imgSrc + "_detail.png";
-  holdingDiv.appendChild(itemImg);
+  subDiv.appendChild(itemImg);
 
   const itemDiv1 = document.createElement("div");
   itemDiv1.classList.add("itemInfo");
@@ -153,13 +187,14 @@ const spawnNewInfoBox = (data, geData) => {//takes data from api fetch and assig
   const examineText = document.createElement("p");
   examineText.innerHTML = data.examine;
   itemDiv1.appendChild(examineText);
-  holdingDiv.appendChild(itemDiv1);
+  subDiv.appendChild(itemDiv1);
 
   const itemDiv2 = document.createElement("div");
   itemDiv2.classList.add("itemInfo2");
   const gePrice = document.createElement("h2");
   gePrice.innerHTML = "GE Price: " + geData[data.id].price;
   itemDiv2.appendChild(gePrice);
+  itemDiv2.appendChild(document.createElement("br"));
   const buyLimit = document.createElement("p");
   buyLimit.innerHTML = "Buy Limit: " + data.limit;
   itemDiv2.appendChild(buyLimit);
@@ -167,13 +202,14 @@ const spawnNewInfoBox = (data, geData) => {//takes data from api fetch and assig
   const dailyVolume = document.createElement("p");
   dailyVolume.innerHTML = "Daily Volume: " + geData[data.id].volume;
   itemDiv2.appendChild(dailyVolume);
-  holdingDiv.appendChild(itemDiv2);
+  subDiv.appendChild(itemDiv2);
 
-  const subDiv = document.createElement("div");
-  holdingDiv.appendChild(subDiv);
+  const subDiv2 = document.createElement("div");
+  holdingDiv.appendChild(subDiv2);
 
   const itemDiv3 = document.createElement("div");
   itemDiv3.classList.add("itemInfo3");
+  itemDiv3.classList.add("subDiv");
   const itemId = document.createElement("p");
   itemId.innerHTML = "Item Id: " + data.id;
   itemDiv3.appendChild(itemId);
@@ -183,22 +219,23 @@ const spawnNewInfoBox = (data, geData) => {//takes data from api fetch and assig
   const timestamp = document.createElement("p");
   timestamp.innerHTML = "Time: " + geData[data.id].timestamp;
   itemDiv3.appendChild(timestamp);
-  subDiv.appendChild(itemDiv3);
+  subDiv2.appendChild(itemDiv3);
 
   const itemDiv4 = document.createElement("div");
   itemDiv4.classList.add("itemInfo4");
+  itemDiv4.classList.add("subDiv");
   const value = document.createElement("p");
   value.innerHTML = "Value: " + data.value;
   itemDiv4.appendChild(value);
   const highAlchProfit = document.createElement("p");
-  highAlchProfit.innerHTML = "High Alch Profit: " + (data.highalch - (geData[data.id].price + natureRune[561].price));
+  highAlchProfit.innerHTML = "High Alch Profit: " + (data.highalch - (offerMap.data[data.id].low + offerMap.data[561].low));
   itemDiv4.appendChild(highAlchProfit);
   itemDiv4.appendChild(document.createElement("hr"));
   const lowAlch = document.createElement("p");
   lowAlch.innerHTML = "Low Alch: " + data.lowalch;
   itemDiv4.appendChild(lowAlch);
   const buyLimitAlchProfit = document.createElement("p");
-  buyLimitAlchProfit.innerHTML = "Buy Limit Alch Profit: " + (data.limit * (data.highalch - (geData[data.id].price + natureRune[561].price)));
+  buyLimitAlchProfit.innerHTML = "Buy Limit Alch Profit: " + (data.limit * (data.highalch - (offerMap.data[data.id].low + offerMap.data[561].low)));
   itemDiv4.appendChild(buyLimitAlchProfit);
   itemDiv4.appendChild(document.createElement("hr"));
   const highAlch = document.createElement("p");
@@ -206,16 +243,52 @@ const spawnNewInfoBox = (data, geData) => {//takes data from api fetch and assig
   itemDiv4.appendChild(highAlch);
   const empty = document.createElement("p");
   itemDiv4.appendChild(empty);
-  subDiv.appendChild(itemDiv4);
-
-  const testText = document.createElement("p");
-  testText.innerHTML = offerMap.data[561].lowTime;
-  //subDiv.appendChild(testText) secret code in progress ;)
+  itemDiv4.appendChild(document.createElement("hr"));
+  const approxBuy = document.createElement("p");
+  approxBuy.innerHTML = "Approx. buy price: " + offerMap.data[data.id].low;
+  itemDiv4.appendChild(approxBuy);
+  const lastBuy = document.createElement("p");
+  lastBuy.innerHTML = "Last buy time: " + unixToReadable(offerMap.data[data.id].lowTime);
+  itemDiv4.appendChild(lastBuy);
+  itemDiv4.appendChild(document.createElement("hr"));
+  const approxSell = document.createElement("p");
+  approxSell.innerHTML = "Approx. sell price: " + offerMap.data[data.id].high;
+  itemDiv4.appendChild(approxSell);
+  const lastSell = document.createElement("p");
+  lastSell.innerHTML = "Last sell time: " + unixToReadable(offerMap.data[data.id].highTime);
+  itemDiv4.appendChild(lastSell);
+  itemDiv4.appendChild(document.createElement("hr"));
+  const taxText = document.createElement("p");
+  taxText.innerHTML = "Tax: " + Math.ceil(offerMap.data[data.id].high * -.01);
+  itemDiv4.appendChild(taxText);
+  const flipProfit = document.createElement("p");
+  flipProfit.innerHTML = "Flipping profit: " + (offerMap.data[data.id].high + Math.ceil(offerMap.data[data.id].high * -.01) - offerMap.data[data.id].low);
+  itemDiv4.appendChild(flipProfit);
+  subDiv2.appendChild(itemDiv4);
 
   itemContainer.appendChild(holdingDiv);
+
+  //const priceGraph = createPriceGraph();
+ // itemContainer.appendChild(priceGraph);
 }
 
+const nameToId = (element) => {
+  for(let i = 0; i < apiMap.length; i++) {
+    if(apiMap[i].name == element) {
+      return apiMap[i].id;
+    }
+  }
+}
+
+
 const createItemRow = (name, craft1, craft2, craft3, nameVar) => {
+  const product = nameToId(name);
+  const item1 = nameToId(craft1);
+  const item2 = nameToId(craft2);
+  if(craft3) {
+    var item3 = nameToId(craft3);
+  }
+
   const itemRow = document.createElement("tr");
 
   const itemCell1 = document.createElement("td");
@@ -228,17 +301,17 @@ const createItemRow = (name, craft1, craft2, craft3, nameVar) => {
 
   const itemCell2 = document.createElement("td");
   if(craft2 && craft3) {
-    var craftCost = priceMapForCalcs[craft1] + priceMapForCalcs[craft2] + priceMapForCalcs[craft3];
+    var craftCost = offerMap.data[item1].low + offerMap.data[item2].low + offerMap.data[item3].low;
   } else if(craft2) {
-    var craftCost = priceMapForCalcs[craft1] + priceMapForCalcs[craft2];
+    var craftCost = offerMap.data[item1].low + offerMap.data[item2].low;
   } else {
-    var craftCost =priceMapForCalcs[craft1];
+    var craftCost = offerMap.data[item1].low;
   }
   itemCell2.innerHTML = craftCost;
   itemRow.appendChild(itemCell2);
 
   const itemCell3 = document.createElement("td");
-  const sellPrice = priceMapForCalcs[name];
+  const sellPrice = offerMap.data[product].high;
   itemCell3.innerHTML = sellPrice;
   itemRow.appendChild(itemCell3);
 
@@ -262,9 +335,33 @@ const createItemRow = (name, craft1, craft2, craft3, nameVar) => {
   }
   itemRow.appendChild(itemCell5);
 
+  const itemCell6 = document.createElement("td");
+  let highVolume;
+  if (!volumeInfo.data.hasOwnProperty(product)) {
+    highVolume = 0;
+  } else {
+    highVolume = volumeInfo.data[product].highPriceVolume
+  }
+  itemCell6.innerHTML = highVolume;
+  itemRow.appendChild(itemCell6);
+
+  const itemCell7 = document.createElement("td");
+  let lowVolume;
+  if (!volumeInfo.data.hasOwnProperty(product)) {
+    lowVolume = 0;
+  } else {
+    lowVolume = volumeInfo.data[product].lowPriceVolume
+  }
+  itemCell7.innerHTML = lowVolume;
+  itemRow.appendChild(itemCell7);
+
   return itemRow
 }
 const createItemRow2 = (numMade, name, num1, craft1, num2, craft2, nameVar) => {
+  const product = nameToId(name);
+  const item1 = nameToId(craft1);
+  const item2 = nameToId(craft2);
+
   const itemRow = document.createElement("tr");
 
   const itemCell1 = document.createElement("td");
@@ -277,20 +374,21 @@ const createItemRow2 = (numMade, name, num1, craft1, num2, craft2, nameVar) => {
 
   const itemCell2 = document.createElement("td");
   if(craft2) {
-    var craftCost = (priceMapForCalcs[craft1] * num1) + (priceMapForCalcs[craft2] * num2);
+    var craftCost = (offerMap.data[item1].low * num1) + (offerMap.data[item2].low * num2);
   } else {
-    var craftCost =priceMapForCalcs[craft1] * num1;
+    var craftCost = offerMap.data[item1].low * num1;
   }
   itemCell2.innerHTML = craftCost;
   itemRow.appendChild(itemCell2);
 
   const itemCell3 = document.createElement("td");
-  const sellPrice = priceMapForCalcs[name] * numMade;
-  itemCell3.innerHTML = sellPrice;
+  const sellPriceEach = offerMap.data[product].high;
+  const sellPriceTotal = offerMap.data[product].high * numMade;
+  itemCell3.innerHTML = sellPriceTotal;
   itemRow.appendChild(itemCell3);
 
   const itemCell4 = document.createElement("td");
-  const tax = Math.ceil(sellPrice * -.01);
+  const tax = Math.ceil(sellPriceEach * -.01) * numMade;
   itemCell4.innerHTML = tax;
   if (tax < 0) {
     itemCell4.classList.add("redText");
@@ -300,7 +398,7 @@ const createItemRow2 = (numMade, name, num1, craft1, num2, craft2, nameVar) => {
   itemRow.appendChild(itemCell4);
 
   const itemCell5 = document.createElement("td");
-  const itemProfit = sellPrice + tax - craftCost;
+  const itemProfit = sellPriceTotal + tax - craftCost;
   itemCell5.innerHTML = itemProfit;
   if (itemProfit < 0) {
     itemCell5.classList.add("redText");
@@ -309,9 +407,32 @@ const createItemRow2 = (numMade, name, num1, craft1, num2, craft2, nameVar) => {
   }
   itemRow.appendChild(itemCell5);
 
+  const itemCell6 = document.createElement("td");
+  let highVolume;
+  if (!volumeInfo.data.hasOwnProperty(product)) {
+    highVolume = 0;
+  } else {
+    highVolume = volumeInfo.data[product].highPriceVolume
+  }
+  itemCell6.innerHTML = highVolume;
+  itemRow.appendChild(itemCell6);
+
+  const itemCell7 = document.createElement("td");
+  let lowVolume;
+  if (!volumeInfo.data.hasOwnProperty(product)) {
+    lowVolume = 0;
+  } else {
+    lowVolume = volumeInfo.data[product].lowPriceVolume
+  }
+  itemCell7.innerHTML = lowVolume;
+  itemRow.appendChild(itemCell7);
+
   return itemRow
 }
-const createHerbRow = (name, craft1, craft2) => {
+const createHerbRow = (name, craft1) => {
+  const product = nameToId(name);
+  const item1 = nameToId(craft1);
+
   const itemRow = document.createElement("tr");
 
   const itemCell1 = document.createElement("td");
@@ -320,18 +441,18 @@ const createHerbRow = (name, craft1, craft2) => {
 
   const itemCell2 = document.createElement("td");
   if(degrimeBool) {
-    var craftCost = (priceMapForCalcs[craft1] * 27) + (priceMapForCalcs['Nature rune'] * 2);
+    var craftCost = (offerMap.data[item1].low * 27) + (offerMap.data[561].low * 2);
   } else {
-    var craftCost = priceMapForCalcs[craft1];
+    var craftCost = offerMap.data[item1].low;
   }
   itemCell2.innerHTML = craftCost;
   itemRow.appendChild(itemCell2);
 
   const itemCell3 = document.createElement("td");
   if(degrimeBool) {
-    var sellPrice = priceMapForCalcs[name] * 27;
+    var sellPrice = offerMap.data[product].high * 27;
   } else {
-    var sellPrice = priceMapForCalcs[name];
+    var sellPrice = offerMap.data[product].high;
   }
   itemCell3.innerHTML = sellPrice;
   itemRow.appendChild(itemCell3);
@@ -360,9 +481,32 @@ const createHerbRow = (name, craft1, craft2) => {
   }
   itemRow.appendChild(itemCell5);
 
+  const itemCell6 = document.createElement("td");
+  let highVolume;
+  if (!volumeInfo.data.hasOwnProperty(product)) {
+    highVolume = 0;
+  } else {
+    highVolume = volumeInfo.data[product].highPriceVolume
+  }
+  itemCell6.innerHTML = highVolume;
+  itemRow.appendChild(itemCell6);
+
+  const itemCell7 = document.createElement("td");
+  let lowVolume;
+  if (!volumeInfo.data.hasOwnProperty(product)) {
+    lowVolume = 0;
+  } else {
+    lowVolume = volumeInfo.data[product].lowPriceVolume
+  }
+  itemCell7.innerHTML = lowVolume;
+  itemRow.appendChild(itemCell7);
+
   return itemRow
 }
 const createPlankRow = (name, craft1, coins) => {
+  const product = nameToId(name);
+  const item1 = nameToId(craft1);
+
   const itemRow = document.createElement("tr");
 
   const itemCell1 = document.createElement("td");
@@ -371,15 +515,15 @@ const createPlankRow = (name, craft1, coins) => {
 
   const itemCell2 = document.createElement("td");
   if(plankSpellBool) {
-    var craftCost = priceMapForCalcs[craft1] + (coins * .7) + priceMapForCalcs['Nature rune'] + (priceMapForCalcs['Astral rune'] * 2);
+    var craftCost = offerMap.data[item1].low + (coins * .7) + offerMap.data[561].low + (offerMap.data[9075].low * 2); //561 is item Id for nature runes and 9075 is for astral runes
   } else {
-    var craftCost = priceMapForCalcs[craft1] + coins;
+    var craftCost = offerMap.data[item1].low + coins;
   }
   itemCell2.innerHTML = craftCost;
   itemRow.appendChild(itemCell2);
 
   const itemCell3 = document.createElement("td");
-  const sellPrice = priceMapForCalcs[name];
+  const sellPrice = offerMap.data[product].high;
   itemCell3.innerHTML = sellPrice;
   itemRow.appendChild(itemCell3);
 
@@ -402,6 +546,26 @@ const createPlankRow = (name, craft1, coins) => {
     itemCell5.classList.add("greenText");
   }
   itemRow.appendChild(itemCell5);
+
+  const itemCell6 = document.createElement("td");
+  let highVolume;
+  if (!volumeInfo.data.hasOwnProperty(product)) {
+    highVolume = 0;
+  } else {
+    highVolume = volumeInfo.data[product].highPriceVolume
+  }
+  itemCell6.innerHTML = highVolume;
+  itemRow.appendChild(itemCell6);
+
+  const itemCell7 = document.createElement("td");
+  let lowVolume;
+  if (!volumeInfo.data.hasOwnProperty(product)) {
+    lowVolume = 0;
+  } else {
+    lowVolume = volumeInfo.data[product].lowPriceVolume
+  }
+  itemCell7.innerHTML = lowVolume;
+  itemRow.appendChild(itemCell7);
 
   return itemRow
 }
@@ -436,6 +600,12 @@ const fletchAmmoCalc = () => {
   const headCell5 = document.createElement("th");
   headCell5.innerHTML = "Profit";
   headRow.appendChild(headCell5);
+  const headCell6 = document.createElement("th");
+  headCell6.innerHTML = "Buying Volume (per hour)";
+  headRow.appendChild(headCell6);
+  const headCell7 = document.createElement("th");
+  headCell7.innerHTML = "Selling Volume (per hour)";
+  headRow.appendChild(headCell7);
 
   const tableBody = document.createElement("tbody");
   fletchCalcTable.appendChild(tableBody);
@@ -585,8 +755,8 @@ const fletchAmmoCalc = () => {
   const rows = Array.from(fletchCalcTable.rows);
   
   rows.sort((row1, row2) => {// sorts by profit highest to lowest
-    const value1 = parseInt(row1.cells[row1.cells.length - 1].textContent);
-    const value2 = parseInt(row2.cells[row2.cells.length - 1].textContent);
+    const value1 = parseInt(row1.cells[row1.cells.length - 3].textContent);
+    const value2 = parseInt(row2.cells[row2.cells.length - 3].textContent);
     return value2 - value1;
   });
   
@@ -627,6 +797,12 @@ const cookingProfitCalc = () => {
   const headCell5 = document.createElement("th");
   headCell5.innerHTML = "Profit";
   headRow.appendChild(headCell5);
+  const headCell6 = document.createElement("th");
+  headCell6.innerHTML = "Buying Volume (per hour)";
+  headRow.appendChild(headCell6);
+  const headCell7 = document.createElement("th");
+  headCell7.innerHTML = "Selling Volume (per hour)";
+  headRow.appendChild(headCell7);
 
   const tableBody = document.createElement("tbody");
   cookCalcTable.appendChild(tableBody);
@@ -796,8 +972,8 @@ const cookingProfitCalc = () => {
   const rows = Array.from(cookCalcTable.rows);
   
   rows.sort((row1, row2) => {// sorts by profit highest to lowest
-    const value1 = parseInt(row1.cells[row1.cells.length - 1].textContent);
-    const value2 = parseInt(row2.cells[row2.cells.length - 1].textContent);
+    const value1 = parseInt(row1.cells[row1.cells.length - 3].textContent);
+    const value2 = parseInt(row2.cells[row2.cells.length - 3].textContent);
     return value2 - value1;
   });
   
@@ -879,11 +1055,16 @@ const herbCleaningCalc = () => {
   const headCell5 = document.createElement("th");
   headCell5.innerHTML = "Profit";
   headRow.appendChild(headCell5);
+  const headCell6 = document.createElement("th");
+  headCell6.innerHTML = "Buying Volume (per hour)";
+  headRow.appendChild(headCell6);
+  const headCell7 = document.createElement("th");
+  headCell7.innerHTML = "Selling Volume (per hour)";
+  headRow.appendChild(headCell7);
 
   const tableBody = document.createElement("tbody");
   herbCleanTable.appendChild(tableBody);
 
-  //
   let guamLeaf = createHerbRow("Guam leaf", 'Grimy guam leaf', 'Nature rune');
   tableBody.appendChild(guamLeaf);
   let marrentill = createHerbRow("Marrentill", 'Grimy marrentill', 'Nature rune');
@@ -916,8 +1097,8 @@ const herbCleaningCalc = () => {
   const rows = Array.from(herbCleanTable.rows);
   
   rows.sort((row1, row2) => {// sorts by profit highest to lowest
-    const value1 = parseInt(row1.cells[row1.cells.length - 1].textContent);
-    const value2 = parseInt(row2.cells[row2.cells.length - 1].textContent);
+    const value1 = parseInt(row1.cells[row1.cells.length - 3].textContent);
+    const value2 = parseInt(row2.cells[row2.cells.length - 3].textContent);
     return value2 - value1;
   });
   
@@ -990,6 +1171,12 @@ const plankMakingCalc = () => {
   const headCell5 = document.createElement("th");
   headCell5.innerHTML = "Profit";
   headRow.appendChild(headCell5);
+  const headCell6 = document.createElement("th");
+  headCell6.innerHTML = "Buying Volume (per hour)";
+  headRow.appendChild(headCell6);
+  const headCell7 = document.createElement("th");
+  headCell7.innerHTML = "Selling Volume (per hour)";
+  headRow.appendChild(headCell7);
 
   const tableBody = document.createElement("tbody");
   plankMakeTable.appendChild(tableBody);
@@ -1006,8 +1193,8 @@ const plankMakingCalc = () => {
   const rows = Array.from(plankMakeTable.rows);
   
   rows.sort((row1, row2) => {// sorts by profit highest to lowest
-    const value1 = parseInt(row1.cells[row1.cells.length - 1].textContent);
-    const value2 = parseInt(row2.cells[row2.cells.length - 1].textContent);
+    const value1 = parseInt(row1.cells[row1.cells.length - 3].textContent);
+    const value2 = parseInt(row2.cells[row2.cells.length - 3].textContent);
     return value2 - value1;
   });
   
