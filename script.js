@@ -16,6 +16,7 @@ const fletchAmmoDiv = document.getElementById("fletchAmmoCalc");
 const cookingFoodDiv = document.getElementById("cookingCalc");
 const herbCleaningDiv = document.getElementById("herbCleaningCalc");
 const plankMakingDiv = document.getElementById("plankMakingCalc");
+const fruitPackageDiv = document.getElementById("fruitPackaging");
 
 let natureRune = "";
 let apiUrl = "https://api.weirdgloop.org/exchange/history/osrs/latest?id="; //this gets ge guide price and daily volume of specific item
@@ -73,6 +74,7 @@ main();
 
 const unixToReadable = (unix) => {
   let unixDate = new Date(unix * 1000);
+  console.log(unix);
   console.log(unixDate);
   let nowDate = new Date();
   console.log(nowDate);
@@ -217,9 +219,10 @@ const spawnNewInfoBox = (data, geData) => {//takes data from api fetch and assig
   memberBool.innerHTML = "Members: " + data.members;
   itemDiv3.appendChild(memberBool);
   const timestamp = document.createElement("p");
-  timestamp.innerHTML = "Time: " + geData[data.id].timestamp;
+  timestamp.innerHTML = "GE Update: " + unixToReadable(new Date(geData[data.id].timestamp).getTime() / 1000);
   itemDiv3.appendChild(timestamp);
   subDiv2.appendChild(itemDiv3);
+  console.log(new Date(geData[data.id].timestamp));
 
   const itemDiv4 = document.createElement("div");
   itemDiv4.classList.add("itemInfo4");
@@ -280,6 +283,34 @@ const nameToId = (element) => {
   }
 }
 
+const createTableHead = () => {
+  const tableHead = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  tableHead.appendChild(headRow);
+  const headCell1 = document.createElement("th");
+  headCell1.innerHTML = "Item";
+  headRow.appendChild(headCell1);
+  const headCell2 = document.createElement("th");
+  headCell2.innerHTML = "Cost";
+  headRow.appendChild(headCell2);
+  const headCell3 = document.createElement("th");
+  headCell3.innerHTML = "Sell Price";
+  headRow.appendChild(headCell3);
+  const headCell4 = document.createElement("th");
+  headCell4.innerHTML = "Tax";
+  headRow.appendChild(headCell4);
+  const headCell5 = document.createElement("th");
+  headCell5.innerHTML = "Profit";
+  headRow.appendChild(headCell5);
+  const headCell6 = document.createElement("th");
+  headCell6.innerHTML = "Buying Volume (per hour)";
+  headRow.appendChild(headCell6);
+  const headCell7 = document.createElement("th");
+  headCell7.innerHTML = "Selling Volume (per hour)";
+  headRow.appendChild(headCell7);
+
+  return tableHead;
+}
 
 const createItemRow = (name, craft1, craft2, craft3, nameVar) => {
   const product = nameToId(name);
@@ -581,31 +612,8 @@ const fletchAmmoCalc = () => {
   const fletchCalcTable = document.createElement("table");
   holdingDiv.appendChild(fletchCalcTable);
 
-  const tableHead = document.createElement("thead");
+  const tableHead = createTableHead();
   fletchCalcTable.appendChild(tableHead);
-  const headRow = document.createElement("tr");
-  tableHead.appendChild(headRow);
-  const headCell1 = document.createElement("th");
-  headCell1.innerHTML = "Item";
-  headRow.appendChild(headCell1);
-  const headCell2 = document.createElement("th");
-  headCell2.innerHTML = "Cost";
-  headRow.appendChild(headCell2);
-  const headCell3 = document.createElement("th");
-  headCell3.innerHTML = "Sell Price";
-  headRow.appendChild(headCell3);
-  const headCell4 = document.createElement("th");
-  headCell4.innerHTML = "Tax";
-  headRow.appendChild(headCell4);
-  const headCell5 = document.createElement("th");
-  headCell5.innerHTML = "Profit";
-  headRow.appendChild(headCell5);
-  const headCell6 = document.createElement("th");
-  headCell6.innerHTML = "Buying Volume (per hour)";
-  headRow.appendChild(headCell6);
-  const headCell7 = document.createElement("th");
-  headCell7.innerHTML = "Selling Volume (per hour)";
-  headRow.appendChild(headCell7);
 
   const tableBody = document.createElement("tbody");
   fletchCalcTable.appendChild(tableBody);
@@ -778,31 +786,8 @@ const cookingProfitCalc = () => {
   const cookCalcTable = document.createElement("table");
   holdingDiv.appendChild(cookCalcTable);
 
-  const tableHead = document.createElement("thead");
+  const tableHead = createTableHead();
   cookCalcTable.appendChild(tableHead);
-  const headRow = document.createElement("tr");
-  tableHead.appendChild(headRow);
-  const headCell1 = document.createElement("th");
-  headCell1.innerHTML = "Item";
-  headRow.appendChild(headCell1);
-  const headCell2 = document.createElement("th");
-  headCell2.innerHTML = "Cost";
-  headRow.appendChild(headCell2);
-  const headCell3 = document.createElement("th");
-  headCell3.innerHTML = "Sell Price";
-  headRow.appendChild(headCell3);
-  const headCell4 = document.createElement("th");
-  headCell4.innerHTML = "Tax";
-  headRow.appendChild(headCell4);
-  const headCell5 = document.createElement("th");
-  headCell5.innerHTML = "Profit";
-  headRow.appendChild(headCell5);
-  const headCell6 = document.createElement("th");
-  headCell6.innerHTML = "Buying Volume (per hour)";
-  headRow.appendChild(headCell6);
-  const headCell7 = document.createElement("th");
-  headCell7.innerHTML = "Selling Volume (per hour)";
-  headRow.appendChild(headCell7);
 
   const tableBody = document.createElement("tbody");
   cookCalcTable.appendChild(tableBody);
@@ -1036,31 +1021,8 @@ const herbCleaningCalc = () => {
   const herbCleanTable = document.createElement("table");
   holdingDiv.appendChild(herbCleanTable);
 
-  const tableHead = document.createElement("thead");
+  const tableHead = createTableHead();
   herbCleanTable.appendChild(tableHead);
-  const headRow = document.createElement("tr");
-  tableHead.appendChild(headRow);
-  const headCell1 = document.createElement("th");
-  headCell1.innerHTML = "Item";
-  headRow.appendChild(headCell1);
-  const headCell2 = document.createElement("th");
-  headCell2.innerHTML = "Cost";
-  headRow.appendChild(headCell2);
-  const headCell3 = document.createElement("th");
-  headCell3.innerHTML = "Sell Price";
-  headRow.appendChild(headCell3);
-  const headCell4 = document.createElement("th");
-  headCell4.innerHTML = "Tax";
-  headRow.appendChild(headCell4);
-  const headCell5 = document.createElement("th");
-  headCell5.innerHTML = "Profit";
-  headRow.appendChild(headCell5);
-  const headCell6 = document.createElement("th");
-  headCell6.innerHTML = "Buying Volume (per hour)";
-  headRow.appendChild(headCell6);
-  const headCell7 = document.createElement("th");
-  headCell7.innerHTML = "Selling Volume (per hour)";
-  headRow.appendChild(headCell7);
 
   const tableBody = document.createElement("tbody");
   herbCleanTable.appendChild(tableBody);
@@ -1152,31 +1114,8 @@ const plankMakingCalc = () => {
   const plankMakeTable = document.createElement("table");
   holdingDiv.appendChild(plankMakeTable);
 
-  const tableHead = document.createElement("thead");
+  const tableHead = createTableHead();
   plankMakeTable.appendChild(tableHead);
-  const headRow = document.createElement("tr");
-  tableHead.appendChild(headRow);
-  const headCell1 = document.createElement("th");
-  headCell1.innerHTML = "Item";
-  headRow.appendChild(headCell1);
-  const headCell2 = document.createElement("th");
-  headCell2.innerHTML = "Cost";
-  headRow.appendChild(headCell2);
-  const headCell3 = document.createElement("th");
-  headCell3.innerHTML = "Sell Price";
-  headRow.appendChild(headCell3);
-  const headCell4 = document.createElement("th");
-  headCell4.innerHTML = "Tax";
-  headRow.appendChild(headCell4);
-  const headCell5 = document.createElement("th");
-  headCell5.innerHTML = "Profit";
-  headRow.appendChild(headCell5);
-  const headCell6 = document.createElement("th");
-  headCell6.innerHTML = "Buying Volume (per hour)";
-  headRow.appendChild(headCell6);
-  const headCell7 = document.createElement("th");
-  headCell7.innerHTML = "Selling Volume (per hour)";
-  headRow.appendChild(headCell7);
 
   const tableBody = document.createElement("tbody");
   plankMakeTable.appendChild(tableBody);
@@ -1201,6 +1140,55 @@ const plankMakingCalc = () => {
   plankMakeTable.innerHTML = '';
   for (const row of rows) {
     plankMakeTable.appendChild(row);
+  }
+}
+
+const packagingCalc = () => {
+  const holdingDiv = document.createElement("div");
+  itemContainer.appendChild(holdingDiv);
+
+  const title = document.createElement("h2");
+  title.innerHTML = 'Packaging fruits/vegtables';
+  title.classList.add("calcTitle");
+  holdingDiv.appendChild(title);
+
+  const packagingTable = document.createElement("table");
+  holdingDiv.appendChild(packagingTable);
+
+  const tableHead = createTableHead();
+  packagingTable.appendChild(tableHead);
+  
+  const tableBody = document.createElement("tbody");
+  packagingTable.appendChild(tableBody);
+
+  let apples5 = createItemRow2(1, "Apples(5)", 1, 'Basket', 5, "Cooking apple");
+  tableBody.appendChild(apples5);
+  let bananas5 = createItemRow2(1, "Bananas(5)", 1, 'Basket', 5, "Banana");
+  tableBody.appendChild(bananas5);
+  let oranges5 = createItemRow2(1, "Oranges(5)", 1, 'Basket', 5, "Orange");
+  tableBody.appendChild(oranges5);
+  let strawberries5 = createItemRow2(1, "Strawberries(5)", 1, 'Basket', 5, "Strawberry");
+  tableBody.appendChild(strawberries5);
+  let tomatoes5 = createItemRow2(1, "Tomatoes(5)", 1, 'Basket', 5, "Tomato");
+  tableBody.appendChild(tomatoes5);
+  let cabbages10 = createItemRow2(1, "Cabbages(10)", 1, 'Empty sack', 10, "Cabbage");
+  tableBody.appendChild(cabbages10);
+  let onions10 = createItemRow2(1, "Onions(10)", 1, 'Empty sack', 10, "Onion");
+  tableBody.appendChild(onions10);
+  let potatoes10 = createItemRow2(1, "Potatoes(10)", 1, 'Empty sack', 10, "Potato");
+  tableBody.appendChild(potatoes10);
+
+  const rows = Array.from(packagingTable.rows);
+  
+  rows.sort((row1, row2) => {// sorts by profit highest to lowest
+    const value1 = parseInt(row1.cells[row1.cells.length - 3].textContent);
+    const value2 = parseInt(row2.cells[row2.cells.length - 3].textContent);
+    return value2 - value1;
+  });
+  
+  packagingTable.innerHTML = '';
+  for (const row of rows) {
+    packagingTable.appendChild(row);
   }
 }
 
@@ -1240,4 +1228,8 @@ herbCleaningDiv.onclick = function() {
 plankMakingDiv.onclick = function() {
   clearItemViewer();
   plankMakingCalc();
+}
+fruitPackageDiv.onclick = function() {
+  clearItemViewer();
+  packagingCalc();
 }

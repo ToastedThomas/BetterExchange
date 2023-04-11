@@ -5,6 +5,7 @@
 }
 html {
   background-color: rgb(29, 29, 32);
+  font-family: helvetica;
 }
 
 .title {
@@ -99,6 +100,7 @@ html {
   text-align: center;
   display: inline-block;
   vertical-align: top;
+  font-size: 0.85em;
 }
 .itemInfo3 p {
   margin-bottom: 10px;
