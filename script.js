@@ -52,7 +52,7 @@ async function main() { //grabs necessary data for item searching and calcs
       return response.json();
     })
     
-    let test = await fetch("https://oldschool.runescape.wiki/w/Module:GEPrices/data?action=raw", {//this api call gets only name and the ge guide price
+    let test = await fetch("https://oldschool.runescape.wiki/w/Module:GEPrices/data.json?action=raw", {//this api call gets only name and the ge guide price
       cache: 'no-cache'// change to no-cache on live version
     });
 
