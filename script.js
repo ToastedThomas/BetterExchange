@@ -17,6 +17,8 @@ const cookingFoodDiv = document.getElementById("cookingCalc");
 const herbCleaningDiv = document.getElementById("herbCleaningCalc");
 const plankMakingDiv = document.getElementById("plankMakingCalc");
 const fruitPackageDiv = document.getElementById("fruitPackaging");
+const gemBoltTipsDiv = document.getElementById("gemBoltTips");
+const craftingJewelleryDiv = document.getElementById("craftingJewellery");
 
 let natureRune = "";
 let apiUrl = "https://api.weirdgloop.org/exchange/history/osrs/latest?id="; //this gets ge guide price and daily volume of specific item
@@ -600,6 +602,7 @@ const createPlankRow = (name, craft1, coins) => {
 
   return itemRow
 }
+
 const fletchAmmoCalc = () => {
   const holdingDiv = document.createElement("div");
   itemContainer.appendChild(holdingDiv);
@@ -773,7 +776,63 @@ const fletchAmmoCalc = () => {
     fletchCalcTable.appendChild(row);
   }
 }
+const gemBoltTipsCalc = () => {
+  const holdingDiv = document.createElement("div");
+  itemContainer.appendChild(holdingDiv);
 
+  const title = document.createElement("h2");
+  title.innerHTML = 'Cutting bolt tips';
+  title.classList.add("calcTitle");
+  holdingDiv.appendChild(title);
+
+  const gemBoltTipCalcTable = document.createElement("table");
+  holdingDiv.appendChild(gemBoltTipCalcTable);
+
+  const tableHead = createTableHead();
+  gemBoltTipCalcTable.appendChild(tableHead);
+
+  const tableBody = document.createElement("tbody");
+  gemBoltTipCalcTable.appendChild(tableBody);
+
+  let opalBoltTips = createItemRow2(12, "Opal bolt tips", 1, "Opal", null, null, null);
+  tableBody.appendChild(opalBoltTips);
+  let jadeBoltTips = createItemRow2(12, "Jade bolt tips", 1, "Jade", null, null, null);
+  tableBody.appendChild(jadeBoltTips);
+  let pearlBoltTips1 = createItemRow2(6, "Pearl bolt tips", 1, "Oyster pearl", null, null, " (oyster pearl)");
+  tableBody.appendChild(pearlBoltTips1);
+  let pearlBoltTips2 = createItemRow2(24, "Pearl bolt tips", 1, "Oyster pearls", null, null, " (oyster pearls)");
+  tableBody.appendChild(pearlBoltTips2);
+  let topazBoltTips = createItemRow2(12, "Topaz bolt tips", 1, "Red topaz", null, null, null);
+  tableBody.appendChild(topazBoltTips);
+  let sapphireBoltTips = createItemRow2(12, "Sapphire bolt tips", 1, "Sapphire", null, null, null);
+  tableBody.appendChild(sapphireBoltTips);
+  let emeraldBoltTips = createItemRow2(12, "Emerald bolt tips", 1, "Emerald", null, null, null);
+  tableBody.appendChild(emeraldBoltTips);
+  let rubyBoltTips = createItemRow2(12, "Ruby bolt tips", 1, "Ruby", null, null, null);
+  tableBody.appendChild(rubyBoltTips);
+  let diamondBoltTips = createItemRow2(12, "Diamond bolt tips", 1, "Diamond", null, null, null);
+  tableBody.appendChild(diamondBoltTips);
+  let dragonstoneBoltTips = createItemRow2(12, "Dragonstone bolt tips", 1, "Dragonstone", null, null, null);
+  tableBody.appendChild(dragonstoneBoltTips);
+  let onyxBoltTips = createItemRow2(12, "Onyx bolt tips", 1, "Onyx", null, null, null);
+  tableBody.appendChild(onyxBoltTips);
+  let amethystBoltTips = createItemRow2(15, "Amethyst bolt tips", 1, "Amethyst", null, null, null);
+  tableBody.appendChild(amethystBoltTips);
+
+
+  const rows = Array.from(gemBoltTipCalcTable.rows);
+  
+  rows.sort((row1, row2) => {// sorts by profit highest to lowest
+    const value1 = parseInt(row1.cells[row1.cells.length - 3].textContent);
+    const value2 = parseInt(row2.cells[row2.cells.length - 3].textContent);
+    return value2 - value1;
+  });
+  
+  gemBoltTipCalcTable.innerHTML = '';
+  for (const row of rows) {
+    gemBoltTipCalcTable.appendChild(row);
+  }
+}
 const cookingProfitCalc = () => {
   const holdingDiv = document.createElement("div");
   itemContainer.appendChild(holdingDiv);
@@ -967,7 +1026,6 @@ const cookingProfitCalc = () => {
     cookCalcTable.appendChild(row);
   }
 }
-
 const herbCleaningCalc = () => {
   const holdingDiv = document.createElement("div");
   itemContainer.appendChild(holdingDiv);
@@ -1069,7 +1127,6 @@ const herbCleaningCalc = () => {
     herbCleanTable.appendChild(row);
   }
 }
-
 const plankMakingCalc = () => {
   const holdingDiv = document.createElement("div");
   itemContainer.appendChild(holdingDiv);
@@ -1142,7 +1199,6 @@ const plankMakingCalc = () => {
     plankMakeTable.appendChild(row);
   }
 }
-
 const packagingCalc = () => {
   const holdingDiv = document.createElement("div");
   itemContainer.appendChild(holdingDiv);
@@ -1191,6 +1247,131 @@ const packagingCalc = () => {
     packagingTable.appendChild(row);
   }
 }
+const craftingJewelleryCalc = () => {
+  const holdingDiv = document.createElement("div");
+  itemContainer.appendChild(holdingDiv);
+
+  const title = document.createElement("h2");
+  title.innerHTML = 'Crafting Jewellery';
+  title.classList.add("calcTitle");
+  holdingDiv.appendChild(title);
+
+  const craftingJewelleryCalcTable = document.createElement("table");
+  holdingDiv.appendChild(craftingJewelleryCalcTable);
+
+  const tableHead = createTableHead();
+  craftingJewelleryCalcTable.appendChild(tableHead);
+
+  const tableBody = document.createElement("tbody");
+  craftingJewelleryCalcTable.appendChild(tableBody);
+
+  //
+  let opalRing = createItemRow("Opal ring", "Opal", "Silver bar", null, null);
+  tableBody.appendChild(opalRing);
+  let opalNecklace = createItemRow("Opal necklace", "Opal", "Silver bar", null, null);
+  tableBody.appendChild(opalNecklace);
+  let opalBracelet = createItemRow("Opal bracelet", "Opal", "Silver bar", null, null);
+  tableBody.appendChild(opalBracelet);
+  let opalAmuletU = createItemRow("Opal amulet (u)", "Opal", "Silver bar", null, null);
+  tableBody.appendChild(opalAmuletU);
+  let jadeRing = createItemRow("Jade ring", "Jade", "Silver bar", null, null);
+  tableBody.appendChild(jadeRing);
+  let jadeNecklace = createItemRow("Jade necklace", "Jade", "Silver bar", null, null);
+  tableBody.appendChild(jadeNecklace);
+  let jadeBracelet = createItemRow("Jade bracelet", "Jade", "Silver bar", null, null);
+  tableBody.appendChild(jadeBracelet);
+  let jadeAmuletU = createItemRow("Jade amulet (u)", "Jade", "Silver bar", null, null);
+  tableBody.appendChild(jadeAmuletU);
+  let topazRing = createItemRow("Topaz ring", "Red topaz", "Silver bar", null, null);
+  tableBody.appendChild(topazRing);
+  let topazNecklace = createItemRow("Topaz necklace", "Red topaz", "Silver bar", null, null);
+  tableBody.appendChild(topazNecklace);
+  let topazBracelet = createItemRow("Topaz bracelet", "Red topaz", "Silver bar", null, null);
+  tableBody.appendChild(topazBracelet);
+  let topazAmuletU = createItemRow("Topaz amulet (u)", "Red topaz", "Silver bar", null, null);
+  tableBody.appendChild(topazAmuletU);
+
+  let goldRing = createItemRow("Gold ring", "Gold bar", null, null, null);
+  tableBody.appendChild(goldRing);
+  let goldNecklace = createItemRow("Gold necklace", "Gold bar", null, null, null);
+  tableBody.appendChild(goldNecklace);
+  let goldBracelet = createItemRow("Gold bracelet", "Gold bar", null, null, null);
+  tableBody.appendChild(goldBracelet);
+  let goldAmuletU = createItemRow("Gold amulet (u)", "Gold bar", null, null, null);
+  tableBody.appendChild(goldAmuletU);
+  let goldTiara = createItemRow("Gold tiara", "Gold bar", null, null, null);
+  tableBody.appendChild(goldTiara);
+  let sapphireRing = createItemRow("Sapphire ring", "Gold bar", "Sapphire", null, null);
+  tableBody.appendChild(sapphireRing);
+  let sapphireNecklace = createItemRow("Sapphire necklace", "Gold bar", "Sapphire", null, null);
+  tableBody.appendChild(sapphireNecklace);
+  let sapphireBracelet = createItemRow("Sapphire bracelet", "Gold bar", "Sapphire", null, null);
+  tableBody.appendChild(sapphireBracelet);
+  let sapphireAmuletU = createItemRow("Sapphire amulet (u)", "Gold bar", "Sapphire", null, null);
+  tableBody.appendChild(sapphireAmuletU);
+  let emeraldRing = createItemRow("Emerald ring", "Gold bar", "Emerald", null, null);
+  tableBody.appendChild(emeraldRing);
+  let emeraldNecklace = createItemRow("Emerald necklace", "Gold bar", "Emerald", null, null);
+  tableBody.appendChild(emeraldNecklace);
+  let emeraldBracelet = createItemRow("Emerald bracelet", "Gold bar", "Emerald", null, null);
+  tableBody.appendChild(emeraldBracelet);
+  let emeraldAmuletU = createItemRow("Emerald amulet (u)", "Gold bar", "Emerald", null, null);
+  tableBody.appendChild(emeraldAmuletU);
+  let rubyRing = createItemRow("Ruby ring", "Gold bar", "Ruby", null, null);
+  tableBody.appendChild(rubyRing);
+  let rubyNecklace = createItemRow("Ruby necklace", "Gold bar", "Ruby", null, null);
+  tableBody.appendChild(rubyNecklace);
+  let rubyBracelet = createItemRow("Ruby bracelet", "Gold bar", "Ruby", null, null);
+  tableBody.appendChild(rubyBracelet);
+  let rubyAmuletU = createItemRow("Ruby amulet (u)", "Gold bar", "Ruby", null, null);
+  tableBody.appendChild(rubyAmuletU);
+  let diamondRing = createItemRow("Diamond ring", "Gold bar", "Diamond", null, null);
+  tableBody.appendChild(diamondRing);
+  let diamondNecklace = createItemRow("Diamond necklace", "Gold bar", "Diamond", null, null);
+  tableBody.appendChild(diamondNecklace);
+  let diamondBracelet = createItemRow("Diamond bracelet", "Gold bar", "Diamond", null, null);
+  tableBody.appendChild(diamondBracelet);
+  let diamondAmuletU = createItemRow("Diamond amulet (u)", "Gold bar", "Diamond", null, null);
+  tableBody.appendChild(diamondAmuletU);
+  let dragonstoneRing = createItemRow("Dragonstone ring", "Gold bar", "Dragonstone", null, null);
+  tableBody.appendChild(dragonstoneRing);
+  let dragonstoneNecklace = createItemRow("Dragon necklace", "Gold bar", "Dragonstone", null, null);
+  tableBody.appendChild(dragonstoneNecklace);
+  let dragonstoneBracelet = createItemRow("Dragonstone bracelet", "Gold bar", "Dragonstone", null, null);
+  tableBody.appendChild(dragonstoneBracelet);
+  let dragonstoneAmuletU = createItemRow("Dragonstone amulet (u)", "Gold bar", "Dragonstone", null, null);
+  tableBody.appendChild(dragonstoneAmuletU);
+  let onyxRing = createItemRow("Onyx ring", "Gold bar", "Onyx", null, null);
+  tableBody.appendChild(onyxRing);
+  let onyxNecklace = createItemRow("Onyx necklace", "Gold bar", "Onyx", null, null);
+  tableBody.appendChild(onyxNecklace);
+  let onyxBracelet = createItemRow("Onyx bracelet", "Gold bar", "Onyx", null, null);
+  tableBody.appendChild(onyxBracelet);
+  let onyxAmuletU = createItemRow("Onyx amulet (u)", "Gold bar", "Onyx", null, null);
+  tableBody.appendChild(onyxAmuletU);
+  let zenyteRing = createItemRow("Zenyte ring", "Gold bar", "Zenyte", null, null);
+  tableBody.appendChild(zenyteRing);
+  let zenyteNecklace = createItemRow("Zenyte necklace", "Gold bar", "Zenyte", null, null);
+  tableBody.appendChild(zenyteNecklace);
+  let zenyteBracelet = createItemRow("Zenyte bracelet", "Gold bar", "Zenyte", null, null);
+  tableBody.appendChild(zenyteBracelet);
+  let zenyteAmuletU = createItemRow("Zenyte amulet (u)", "Gold bar", "Zenyte", null, null);
+  tableBody.appendChild(zenyteAmuletU);
+
+
+  const rows = Array.from(craftingJewelleryCalcTable.rows);
+  
+  rows.sort((row1, row2) => {// sorts by profit highest to lowest
+    const value1 = parseInt(row1.cells[row1.cells.length - 3].textContent);
+    const value2 = parseInt(row2.cells[row2.cells.length - 3].textContent);
+    return value2 - value1;
+  });
+  
+  craftingJewelleryCalcTable.innerHTML = '';
+  for (const row of rows) {
+    craftingJewelleryCalcTable.appendChild(row);
+  }
+}
 
 const clearItemViewer = () => {
   while(itemContainer.firstChild) {
@@ -1232,4 +1413,12 @@ plankMakingDiv.onclick = function() {
 fruitPackageDiv.onclick = function() {
   clearItemViewer();
   packagingCalc();
+}
+gemBoltTipsDiv.onclick = function() {
+  clearItemViewer();
+  gemBoltTipsCalc();
+}
+craftingJewelleryDiv.onclick = function() {
+  clearItemViewer();
+  craftingJewelleryCalc();
 }
